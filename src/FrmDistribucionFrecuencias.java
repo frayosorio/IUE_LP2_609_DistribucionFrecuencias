@@ -4,7 +4,10 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.table.DefaultTableModel;
 
 public class FrmDistribucionFrecuencias extends JFrame {
 
@@ -49,6 +52,24 @@ public class FrmDistribucionFrecuencias extends JFrame {
         JList lstRespuestas = new JList();
         lstRespuestas.setBounds(110, 95, 100, 100);
         add(lstRespuestas);
+
+        JButton btnCalcular = new JButton("Calcular");
+        btnCalcular.setBounds(10, 200, 100, 25);
+        add(btnCalcular);
+
+        JTable tblFrecuencias = new JTable();
+        JScrollPane spFrecuencias = new JScrollPane(tblFrecuencias);
+        spFrecuencias.setBounds(10, 230, 470, 200);
+        add(spFrecuencias);
+
+        String[] encabezados = { "Variable",
+                "Frecuencia absoluta (f)",
+                "Frecuencia acumulada (F)",
+                "Frecuencia relativa (fr)",
+                "Frecuencia porcentual (%f)" };
+
+        DefaultTableModel modelo = new DefaultTableModel(null, encabezados);
+        tblFrecuencias.setModel(modelo);
 
     }
 }
