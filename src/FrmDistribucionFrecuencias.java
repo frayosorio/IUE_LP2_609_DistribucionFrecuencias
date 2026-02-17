@@ -4,12 +4,19 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 
 public class FrmDistribucionFrecuencias extends JFrame {
+
+    // variables globales
+    private String[] respuestas = new String[1000];
+    private int totalRespuestas = -1;
+    private JComboBox cmbRespuesta;
+    private JList lstRespuestas;
 
     // metodo constructor
     public FrmDistribucionFrecuencias() {
@@ -34,7 +41,7 @@ public class FrmDistribucionFrecuencias extends JFrame {
         lblRespuesta.setBounds(10, 65, 100, 20);
         add(lblRespuesta);
 
-        JComboBox cmbRespuesta = new JComboBox();
+        cmbRespuesta = new JComboBox();
         cmbRespuesta.setBounds(120, 65, 100, 25);
         add(cmbRespuesta);
 
@@ -49,9 +56,10 @@ public class FrmDistribucionFrecuencias extends JFrame {
         btnQuitar.setBounds(10, 125, 100, 25);
         add(btnQuitar);
 
-        JList lstRespuestas = new JList();
-        lstRespuestas.setBounds(110, 95, 100, 100);
-        add(lstRespuestas);
+        lstRespuestas = new JList();
+        JScrollPane spRespuestas = new JScrollPane(lstRespuestas);
+        spRespuestas.setBounds(110, 95, 100, 100);
+        add(spRespuestas);
 
         JButton btnCalcular = new JButton("Calcular");
         btnCalcular.setBounds(10, 200, 100, 25);
@@ -71,5 +79,40 @@ public class FrmDistribucionFrecuencias extends JFrame {
         DefaultTableModel modelo = new DefaultTableModel(null, encabezados);
         tblFrecuencias.setModel(modelo);
 
+        // eventos
+        btnAgregar.addActionListener(e -> {
+            agregarRespuesta();
+        });
+        btnQuitar.addActionListener(e -> {
+            quitarRespuesta();
+        });
     }
+
+    private void agregarRespuesta() {
+        totalRespuestas++;
+        respuestas[totalRespuestas] = cmbRespuesta.getSelectedItem().toString();
+        mostrarRespuestas();
+    }
+
+    private void mostrarRespuestas() {
+        String[] respuestasAMostrar = new String[totalRespuestas + 1];
+        for (int i = 0; i <= totalRespuestas; i++) {
+            respuestasAMostrar[i] = respuestas[i];
+        }
+        lstRespuestas.setListData(respuestasAMostrar);
+    }
+
+    private void quitarRespuesta() {
+        if (lstRespuestas.getSelectedIndex() >= 0) {
+            for (int i = lstRespuestas.getSelectedIndex() + 1; i <= totalRespuestas; i++) {
+                respuestas[i - 1] = respuestas[i];
+            }
+            totalRespuestas--;
+            mostrarRespuestas();
+        }
+        else{
+            JOptionPane.showMessageDialog(null, "Debe escoger la respuesta a retirar");
+        }
+    }
+
 }
