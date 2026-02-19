@@ -17,6 +17,13 @@ public class FrmDistribucionFrecuencias extends JFrame {
     private int totalRespuestas = -1;
     private JComboBox cmbRespuesta;
     private JList lstRespuestas;
+    String[] opciones = { "Excelente", "Buena", "Regular", "Mala" };
+    String[] encabezados = { "Variable",
+            "Frecuencia absoluta (f)",
+            "Frecuencia acumulada (F)",
+            "Frecuencia relativa (fr)",
+            "Frecuencia porcentual (%f)" };
+    JTable tblFrecuencias;
 
     // metodo constructor
     public FrmDistribucionFrecuencias() {
@@ -45,8 +52,7 @@ public class FrmDistribucionFrecuencias extends JFrame {
         cmbRespuesta.setBounds(120, 65, 100, 25);
         add(cmbRespuesta);
 
-        String[] respuestas = { "Excelente", "Buena", "Regular", "Mala" };
-        cmbRespuesta.setModel(new DefaultComboBoxModel(respuestas));
+        cmbRespuesta.setModel(new DefaultComboBoxModel(opciones));
 
         JButton btnAgregar = new JButton(">>");
         btnAgregar.setBounds(10, 95, 100, 25);
@@ -65,16 +71,10 @@ public class FrmDistribucionFrecuencias extends JFrame {
         btnCalcular.setBounds(10, 200, 100, 25);
         add(btnCalcular);
 
-        JTable tblFrecuencias = new JTable();
+        tblFrecuencias = new JTable();
         JScrollPane spFrecuencias = new JScrollPane(tblFrecuencias);
         spFrecuencias.setBounds(10, 230, 470, 200);
         add(spFrecuencias);
-
-        String[] encabezados = { "Variable",
-                "Frecuencia absoluta (f)",
-                "Frecuencia acumulada (F)",
-                "Frecuencia relativa (fr)",
-                "Frecuencia porcentual (%f)" };
 
         DefaultTableModel modelo = new DefaultTableModel(null, encabezados);
         tblFrecuencias.setModel(modelo);
@@ -86,6 +86,45 @@ public class FrmDistribucionFrecuencias extends JFrame {
         btnQuitar.addActionListener(e -> {
             quitarRespuesta();
         });
+        btnCalcular.addActionListener(e -> {
+            calcularFrecuencias();
+        });
+    }
+
+    private void calcularFrecuencias() {
+        // Calculo de frecuencias absolutas
+        double[][] frecuencias = new double[opciones.length][4];
+        for (int i = 0; i <= totalRespuestas; i++) {
+            for (int j = 0; j < opciones.length; j++) {
+                if (respuestas[i].equals(opciones[j])) {
+                    frecuencias[j][0]++;
+                }
+            }
+        }
+
+        // Calculo de frecuencias restantes y mostrar resultados
+        String[][] datos = new String[opciones.length][5];
+        for (int i = 0; i < opciones.length; i++) {
+            // calcular frecuencia acumulada
+            if (i == 0)
+                frecuencias[i][1] = frecuencias[i][0];
+            else
+                frecuencias[i][1] = frecuencias[i][0] + frecuencias[i - 1][1];
+            // calcular frecuencia relativa
+            frecuencias[i][2] = frecuencias[i][0] / (totalRespuestas + 1);
+            // calcular frecuencia porcentual
+            frecuencias[i][3] = frecuencias[i][2] * 100;
+
+            // mostrar resutados
+            datos[i][0] = opciones[i];
+            datos[i][1] = String.valueOf(frecuencias[i][0]);
+            datos[i][2] = String.valueOf(frecuencias[i][1]);
+            datos[i][3] = String.valueOf(frecuencias[i][2]);
+            datos[i][4] = String.valueOf(frecuencias[i][3]);
+
+        }
+        DefaultTableModel modelo = new DefaultTableModel(datos, encabezados);
+        tblFrecuencias.setModel(modelo);
     }
 
     private void agregarRespuesta() {
@@ -109,8 +148,7 @@ public class FrmDistribucionFrecuencias extends JFrame {
             }
             totalRespuestas--;
             mostrarRespuestas();
-        }
-        else{
+        } else {
             JOptionPane.showMessageDialog(null, "Debe escoger la respuesta a retirar");
         }
     }
